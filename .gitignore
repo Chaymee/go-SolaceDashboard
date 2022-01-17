@@ -10,3 +10,8 @@
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+dashboard/vendor
+pubsubplus-go-client-0.9.0
+.DS_Store
+goAPIDemo.com
+solace.db
