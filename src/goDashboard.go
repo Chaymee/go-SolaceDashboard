@@ -80,32 +80,43 @@ func ReadDatabase() {
 		log.Fatal(dberr)
 	}
 	defer db.Close()
-
+	db.Update(func(tx *bolt.Tx) error {
+		_, err := tx.CreateBucketIfNotExists([]byte("eventBucket"))
+		if err != nil {
+			log.Fatal("Failed to create bucket", err)
+		}
+		return nil
+	})
 	// Get 5 rows from the display table
 	db.View(func(tx *bolt.Tx) error {
 		c := tx.Bucket([]byte("eventBucket")).Cursor()
 
-		// event range
-		//min := itob(0)
+		if c != nil {
+			// event range
+			//min := itob(0)
 
-		// iterate through table
-		number, contents = c.First()
+			// iterate through table
+			number, contents = c.First()
 
-		if number != nil {
-			data[0][0] = strconv.Itoa(btoi(number))
-			data[0][1] = string(contents)
-			//PushDisplayUpdate(number, contents)
-			PushDisplay(data)
-		}
-
-		for count := 0; count < 4; count++ {
-			number, contents = c.Next()
 			if number != nil {
-				data[count+1][0] = strconv.Itoa(btoi(number))
-				data[count+1][1] = string(contents)
+				data[0][0] = strconv.Itoa(btoi(number))
+				data[0][1] = string(contents)
 				//PushDisplayUpdate(number, contents)
 				PushDisplay(data)
 			}
+
+			for count := 0; count < 4; count++ {
+				number, contents = c.Next()
+				if number != nil {
+					data[count+1][0] = strconv.Itoa(btoi(number))
+					data[count+1][1] = string(contents)
+					//PushDisplayUpdate(number, contents)
+					PushDisplay(data)
+				}
+
+			}
+		} else {
+			fmt.Println("No bucket for events exist yet, will be created when event is reciebed.")
 
 		}
 		return nil
