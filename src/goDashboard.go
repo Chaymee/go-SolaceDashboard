@@ -20,6 +20,8 @@ import (
 	"solace.dev/go/messaging/pkg/solace/resource"
 )
 
+//TODO replace c with cursor
+
 // Some global variables because I am a lazy programmer
 var (
 	W *astilectron.Window
